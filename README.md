@@ -1,3 +1,5 @@
+# Node-Red Configuration for the PIT Hackathon 2017
+
 This repository contains the configuration files for the Node-Red server that
 shall be used during the PIT Hackathon 2017. They are examples on how to retrieve
 the current weather information from the weather station of the University of Paderborn,
