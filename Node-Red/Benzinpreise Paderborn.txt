@@ -1,0 +1,87 @@
+[
+    {
+        "id": "886697f5.fe3858",
+        "type": "tab",
+        "label": "Benzinpreise Paderborn"
+    },
+    {
+        "id": "f9c073dd.53ebb",
+        "type": "inject",
+        "z": "886697f5.fe3858",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 127,
+        "y": 93,
+        "wires": [
+            [
+                "8609e5a.39cfd98"
+            ]
+        ]
+    },
+    {
+        "id": "8609e5a.39cfd98",
+        "type": "http request",
+        "z": "886697f5.fe3858",
+        "name": "Benzinpreise Paderborn holen",
+        "method": "GET",
+        "ret": "txt",
+        "url": "https://creativecommons.tankerkoenig.de/json/list.php?lat=51.718&lng=8.752&rad=15&sort=dist&type=all&apikey=<API KEY>",
+        "tls": "",
+        "x": 385,
+        "y": 93,
+        "wires": [
+            [
+                "feb2886b.2ae128",
+                "b990f267.2e8898"
+            ]
+        ]
+    },
+    {
+        "id": "feb2886b.2ae128",
+        "type": "debug",
+        "z": "886697f5.fe3858",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 777,
+        "y": 92,
+        "wires": []
+    },
+    {
+        "id": "b990f267.2e8898",
+        "type": "mqtt out",
+        "z": "886697f5.fe3858",
+        "name": "",
+        "topic": "/paderborn/petrol",
+        "qos": "",
+        "retain": "",
+        "broker": "e9922ec5.2c3a1",
+        "x": 800,
+        "y": 183,
+        "wires": []
+    },
+    {
+        "id": "e9922ec5.2c3a1",
+        "type": "mqtt-broker",
+        "z": "",
+        "broker": "broker",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": ""
+    }
+]

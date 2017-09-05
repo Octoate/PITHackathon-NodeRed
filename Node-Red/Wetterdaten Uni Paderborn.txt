@@ -1,0 +1,150 @@
+[
+    {
+        "id": "e9ebc97b.db523",
+        "type": "tab",
+        "label": "Wetterdatan Uni Paderborn"
+    },
+    {
+        "id": "e389becc.ee7c1",
+        "type": "inject",
+        "z": "e9ebc97b.db523",
+        "name": "Alle 10 Minuten",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "600",
+        "crontab": "",
+        "once": true,
+        "x": 136,
+        "y": 51,
+        "wires": [
+            [
+                "51095fd4.c8978"
+            ]
+        ]
+    },
+    {
+        "id": "51095fd4.c8978",
+        "type": "http request",
+        "z": "e9ebc97b.db523",
+        "name": "Aktuelle Wetterdaten holen",
+        "method": "GET",
+        "ret": "txt",
+        "url": "http://wetter.upb.de/handy.html",
+        "tls": "",
+        "x": 367,
+        "y": 51.19999694824219,
+        "wires": [
+            [
+                "eb620cb3.44b4f"
+            ]
+        ]
+    },
+    {
+        "id": "eb620cb3.44b4f",
+        "type": "html",
+        "z": "e9ebc97b.db523",
+        "name": "Single table row data",
+        "tag": "b",
+        "ret": "html",
+        "as": "single",
+        "x": 624,
+        "y": 51,
+        "wires": [
+            [
+                "e2c99173.a94208"
+            ]
+        ]
+    },
+    {
+        "id": "62b4a23b.c2215c",
+        "type": "debug",
+        "z": "e9ebc97b.db523",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 894.0000610351562,
+        "y": 51.19999694824219,
+        "wires": []
+    },
+    {
+        "id": "e2c99173.a94208",
+        "type": "function",
+        "z": "e9ebc97b.db523",
+        "name": "Convert to readable JS object",
+        "func": "// get payload length\npayloadLength = msg.payload.length;\n\n// create description mappings (use \"skip\" value to ignore this setting)\nvar mapping = [ \n    \"skip\", \"time\", \"barometricpressure\", \"skip\", \"temperature\", \"temperaturemin\", \"temperaturemax\", \"windchill\", \"windchillmin\", \"dewpoint\",\n    \"humidity\", \"raintoday\", \"windintensity\", \"windintensitymax\", \"winddirection\", \"sunrise\", \"sunset\"\n];\n\nvar message = { payload: {} };\nfor (i = 1; i < payloadLength; i++)\n{\n    message.topic = \"/paderborn/university/weather\";\n    \n    if (mapping[i] != \"skip\")\n    {\n        // strip leading and trailing spaces\n        var text = msg.payload[i].trim();\n        \n        // change degree celsius HTML code to its char representation\n        text = text.replace(\"&#xFFFD;\", \"°\");\n        \n        // remove <br/> tags\n        text = text.replace(/<br\\/>/g, \"\");\n        \n        // finally set the payload property\n        message.payload[mapping[i]] = text;\n    }\n}\n\nreturn message;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 576,
+        "y": 166.40000915527344,
+        "wires": [
+            [
+                "245a5bd0.9d6724",
+                "aef6f6c4.c2e2d"
+            ]
+        ]
+    },
+    {
+        "id": "245a5bd0.9d6724",
+        "type": "mqtt out",
+        "z": "e9ebc97b.db523",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "broker": "e9922ec5.2c3a1",
+        "x": 830,
+        "y": 166.4000244140625,
+        "wires": []
+    },
+    {
+        "id": "11b8a4e7.b0aafb",
+        "type": "http request",
+        "z": "e9ebc97b.db523",
+        "name": "Thingspeak Update",
+        "method": "GET",
+        "ret": "txt",
+        "url": "https://api.thingspeak.com/update?api_key=<API KEY>&field1={{{payload.temperature}}}&field2={{payload.humidity}}&field3={{{payload.windintensity}}}",
+        "tls": "",
+        "x": 802.5,
+        "y": 373.20001220703125,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "aef6f6c4.c2e2d",
+        "type": "function",
+        "z": "e9ebc97b.db523",
+        "name": "Daten vorbereiten",
+        "func": "msg.payload.humidity = msg.payload.humidity.split(\" \")[0];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 562.5,
+        "y": 372.20001220703125,
+        "wires": [
+            [
+                "11b8a4e7.b0aafb"
+            ]
+        ]
+    },
+    {
+        "id": "e9922ec5.2c3a1",
+        "type": "mqtt-broker",
+        "z": "",
+        "broker": "broker",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": ""
+    }
+]

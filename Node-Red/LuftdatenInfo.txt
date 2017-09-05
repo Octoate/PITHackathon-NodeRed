@@ -1,0 +1,117 @@
+[
+    {
+        "id": "b19833b6.2089d8",
+        "type": "tab",
+        "label": "Luftdaten.info"
+    },
+    {
+        "id": "cbe962b6.dc056",
+        "type": "inject",
+        "z": "b19833b6.2089d8",
+        "name": "Alle 5 Minuten",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "300",
+        "crontab": "",
+        "once": false,
+        "x": 143,
+        "y": 112,
+        "wires": [
+            [
+                "2e29e5a7.7a2e3a",
+                "ebf0de1.691192"
+            ]
+        ]
+    },
+    {
+        "id": "904e635b.5fae2",
+        "type": "mqtt out",
+        "z": "b19833b6.2089d8",
+        "name": "Publish /luftdaten.info/stations",
+        "topic": "/luftdaten.info/stations",
+        "qos": "",
+        "retain": "",
+        "broker": "e9922ec5.2c3a1",
+        "x": 828,
+        "y": 113,
+        "wires": []
+    },
+    {
+        "id": "27f3fc11.7654ec",
+        "type": "debug",
+        "z": "b19833b6.2089d8",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 768,
+        "y": 215,
+        "wires": []
+    },
+    {
+        "id": "2e29e5a7.7a2e3a",
+        "type": "http request",
+        "z": "b19833b6.2089d8",
+        "name": "Luftdaten.info - Alle Messwerte",
+        "method": "GET",
+        "ret": "txt",
+        "url": "http://api.luftdaten.info/static/v1/data.json",
+        "tls": "",
+        "x": 430,
+        "y": 112,
+        "wires": [
+            [
+                "904e635b.5fae2"
+            ]
+        ]
+    },
+    {
+        "id": "ebf0de1.691192",
+        "type": "http request",
+        "z": "b19833b6.2089d8",
+        "name": "Messwerte Paderborn",
+        "method": "GET",
+        "ret": "txt",
+        "url": "http://api.luftdaten.info/v1/sensor/1392/",
+        "tls": "",
+        "x": 460,
+        "y": 325,
+        "wires": [
+            [
+                "167b13b6.b682c4"
+            ]
+        ]
+    },
+    {
+        "id": "167b13b6.b682c4",
+        "type": "mqtt out",
+        "z": "b19833b6.2089d8",
+        "name": "Publish /luftdaten.info/paderborn",
+        "topic": "/luftdaten.info/paderborn",
+        "qos": "",
+        "retain": "",
+        "broker": "e9922ec5.2c3a1",
+        "x": 838,
+        "y": 326,
+        "wires": []
+    },
+    {
+        "id": "e9922ec5.2c3a1",
+        "type": "mqtt-broker",
+        "z": "",
+        "broker": "broker",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": ""
+    }
+]

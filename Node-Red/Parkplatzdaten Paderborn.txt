@@ -1,0 +1,119 @@
+[
+    {
+        "id": "1fd8564f.aa138a",
+        "type": "tab",
+        "label": "Parkplatzdaten Paderborn"
+    },
+    {
+        "id": "6f5b0e50.6f9f6",
+        "type": "inject",
+        "z": "1fd8564f.aa138a",
+        "name": "Alle 5 Minuten",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "300",
+        "crontab": "",
+        "once": true,
+        "x": 112.5,
+        "y": 38,
+        "wires": [
+            [
+                "e05c7d12.7bc2e8"
+            ]
+        ]
+    },
+    {
+        "id": "e05c7d12.7bc2e8",
+        "type": "http request",
+        "z": "1fd8564f.aa138a",
+        "name": "Parkplatzstatus holen",
+        "method": "GET",
+        "ret": "txt",
+        "url": "https://www4.paderborn.de/ParkInfoASP/default.aspx",
+        "tls": "",
+        "x": 333.5,
+        "y": 38.19999694824219,
+        "wires": [
+            [
+                "5d59968.67eefe8"
+            ]
+        ]
+    },
+    {
+        "id": "5d59968.67eefe8",
+        "type": "html",
+        "z": "1fd8564f.aa138a",
+        "name": "Single table row data",
+        "tag": "table tbody tr td",
+        "ret": "text",
+        "as": "single",
+        "x": 577.5,
+        "y": 38,
+        "wires": [
+            [
+                "55c13e99.b57258"
+            ]
+        ]
+    },
+    {
+        "id": "af9007c2.8dde2",
+        "type": "debug",
+        "z": "1fd8564f.aa138a",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 829.5,
+        "y": 38.20001220703125,
+        "wires": []
+    },
+    {
+        "id": "55c13e99.b57258",
+        "type": "function",
+        "z": "1fd8564f.aa138a",
+        "name": "Convert to readable JS object",
+        "func": "payloadLength = msg.payload.length;\n\nvar outputMsgs = [];\nfor (i = 0; i < payloadLength; i += 4)\n{\n    var message = { payload: {} };\n    message.payload.location = msg.payload[i].trim();\n    message.topic = \"/paderborn/parking/\" + message.payload.location.split(\" \")[0];\n    message.payload.total = msg.payload[i + 2].trim();\n    message.payload.available = msg.payload[i + 3].trim();\n    outputMsgs.push(message);\n}\n\nreturn [outputMsgs];",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 562.5,
+        "y": 144.40000915527344,
+        "wires": [
+            [
+                "894b9c07.553ef8",
+                "af9007c2.8dde2"
+            ]
+        ]
+    },
+    {
+        "id": "894b9c07.553ef8",
+        "type": "mqtt out",
+        "z": "1fd8564f.aa138a",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "broker": "e9922ec5.2c3a1",
+        "x": 806.5,
+        "y": 145.4000244140625,
+        "wires": []
+    },
+    {
+        "id": "e9922ec5.2c3a1",
+        "type": "mqtt-broker",
+        "z": "",
+        "broker": "broker",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": ""
+    }
+]
